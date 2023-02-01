@@ -7,11 +7,12 @@ on:
 jobs:
   block_merge:
     runs-on: ubuntu-latest
+    env:
+      MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
       - name: Check if merge request contains blocked label
         id: check_label
         if: contains(github.event.pull_request.labels.*.name, 'WIP')
@@ -22,8 +23,6 @@ jobs:
       - name: Set Pull Request Status
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
-        env:
-          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
           script: |
             const pullRequest = context.payload.pull_request
