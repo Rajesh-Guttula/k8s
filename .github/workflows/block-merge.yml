@@ -3,8 +3,7 @@ name: Block Merge Requests on Labels
 on:
   pull_request:
     types: [labeled]
-env:
-  MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
 
 jobs:
   block_merge:
@@ -24,6 +23,7 @@ jobs:
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
         with:
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
