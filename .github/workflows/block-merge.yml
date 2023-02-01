@@ -23,11 +23,11 @@ jobs:
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
         with:
-          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
-            const octokit = new github.GitHub(MY_GITHUB_TOKEN)
+            const octokit = new github.GitHub(github-token)
             octokit.pulls.update({
               ...repository,
               pull_number: pullRequest.number,
