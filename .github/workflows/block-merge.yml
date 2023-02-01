@@ -21,12 +21,12 @@ jobs:
 
       - name: auth
         uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set Pull Request Status
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
