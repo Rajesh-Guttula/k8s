@@ -26,7 +26,7 @@ jobs:
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
         with:
-          repo-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
