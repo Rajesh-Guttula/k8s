@@ -22,7 +22,7 @@ jobs:
       - name: auth
         uses: actions/labeler@v4
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           
       - name: Set Pull Request Status
         uses: actions/github-script@v6
@@ -30,7 +30,7 @@ jobs:
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
-            const octokit = new github.GitHub(github-token)
+            const octokit = new github.GitHub(GITHUB_TOKEN)
             octokit.pulls.update({
               ...repository,
               pull_number: pullRequest.number,
