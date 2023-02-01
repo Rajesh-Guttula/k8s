@@ -22,7 +22,7 @@ jobs:
       - name: auth
         uses: actions/labeler@v4
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.MY_GITHUB_TOKEN }}
           
       - name: Set Pull Request Status
         uses: actions/github-script@v6
