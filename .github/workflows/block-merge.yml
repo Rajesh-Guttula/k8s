@@ -22,8 +22,9 @@ jobs:
       - name: Set Pull Request Status
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
-        with:
+        env:
           GITHUB_TOKEN: ${{ github.MY_GITHUB_TOKEN }}
+        with:
           script: |
             const pullRequest = context.payload.pull_request
             const repository = context.repo
