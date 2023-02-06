@@ -19,20 +19,35 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, 'WIP')
         run: |
           echo "This pull request contains a blocked label and cannot be merged."
-          echo "TO_BLOCK=yes" >> $GITHUB_OUTPUT
+          exit 0
           
       - name: Set Pull Request Status
         uses: actions/github-script@v6
-        if: ${{ steps.check_label.outputs.TO_BLOCK == 'yes' }}
-        env: 
-        GITHUB_TOKEN: ${{ env.MY_GITHUB_TOKEN }}
-        with:
-          script: |
-            const pullRequest = context.payload.pull_request
-            const repository = context.repo
-            const octokit = new github.GitHub(GITHUB_TOKEN)
-            octokit.pulls.update({
-              ...repository,
-              pull_number: pullRequest.number,
-              state: 'failure',
-            })
+        if: ${{ steps.check_label.outputs.TO_BLOCK == 0 }}
+         env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      with:
+        script: |
+          const context = github.context;
+          const state = 'failure';
+          const description = 'The CI has failed';
+          const repo = context.repo;
+
+          const pullRequest = context.payload.pull_request;
+          const prNumber = pullRequest.number;
+
+          await github.pulls.createReview({
+            owner: repo.owner,
+            repo: repo.repo,
+            pull_number: prNumber,
+            body: description,
+            event: 'REQUEST_CHANGES'
+          });
+          await github.repos.createStatus({
+            owner: repo.owner,
+            repo: repo.repo,
+            sha: pullRequest.head.sha,
+            state: state,
+            description: description,
+            context: 'Continuous Integration'
+          });
