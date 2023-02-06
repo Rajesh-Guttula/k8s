@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check for failure label
+    - name: Check for WIP label
       id: check-label
-      uses: actions/github-script@v6
+      uses: actions/github-script@v2
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
       with:
@@ -25,7 +25,7 @@ jobs:
           const labels = pullRequest.labels.map(label => label.name);
           
           if (!labels.includes('WIP')) {
-            console.log('Label "WIP" found, exiting');
+            console.log('Label "WIP" not found, exiting');
             process.exit(0);
           }
           
