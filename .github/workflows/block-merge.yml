@@ -3,29 +3,37 @@ name: Block Merge Requests on Labels
 on:
   pull_request:
     types: [labeled]
-env:
-  MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
+env:
+  GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
 jobs:
-  block_merge:
+  update_pr_state:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Check if merge request contains blocked label
-        id: check_label
-        if: contains(github.event.pull_request.labels.*.name, 'WIP')
-        run: |
-          echo "This pull request contains a blocked label and cannot be merged."
-          exit 0
+    - name: Check for failure label
+      id: check-label
+      uses: actions/github-script@v6
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      with:
+        script: |
+          const context = github.context;
+          const repo = context.repo;
+          const pullRequest = context.payload.pull_request;
+          const labels = pullRequest.labels.map(label => label.name);
           
-      - name: Set Pull Request Status
-        uses: actions/github-script@v6
-        if: ${{ steps.check_label.outputs.exit-code == 0 }}
-        env:
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          if (!labels.includes('WIP')) {
+            console.log('Label "WIP" found, exiting');
+            process.exit(0);
+          }
+          
+    - name: Update PR State
+      if: steps.check-label.outputs.exit-code == 0
+      uses: actions/github-script@v2
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
       with:
         script: |
           const context = github.context;
