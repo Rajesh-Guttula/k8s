@@ -24,8 +24,8 @@ jobs:
       - name: Set Pull Request Status
         uses: actions/github-script@v6
         if: ${{ steps.check_label.outputs.exit-code == 0 }}
-         env:
-        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
       with:
         script: |
           const context = github.context;
