@@ -29,7 +29,6 @@ jobs:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         with:
           script: |
-            const github = require('@actions/github');
             const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
             const repo = context.repo;
