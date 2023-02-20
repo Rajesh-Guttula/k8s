@@ -29,19 +29,11 @@ jobs:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         with:
           script: |
-            const { GitHub } = require('@actions/github');
-            const octokit = new Github.getOctokit(process.env.GITHUB_TOKEN);
-
-            const repo = context.repo;
-            const prNumber = context.payload.pull_request.number;
-
-            const failureState = 'failure';
-
-            await octokit.repos.createStatus({
-              owner: repo.owner,
-              repo: repo.repo,
-              sha: context.payload.pull_request.head.sha,
-              state: failureState,
-              description: 'Workflow checks have failed',
-              context: 'continuous-integration'
-            });
+            const pullRequest = context.payload.pull_request
+            const repository = context.repo
+            const octokit = new github.GitHub(env.GITHUB_TOKEN)
+            octokit.pulls.update({
+              ...repository,
+              pull_number: pullRequest.number,
+              state: 'failure',
+            })
