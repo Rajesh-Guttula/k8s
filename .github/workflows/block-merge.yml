@@ -29,25 +29,19 @@ jobs:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         with:
           script: |
-            const state = 'failure';
-            const description = 'The CI has failed';
+            const { GitHub } = require("@octokit/rest");
+            const octokit = new GitHub({ auth: process.env.GITHUB_TOKEN });
+
             const repo = context.repo;
+            const prNumber = context.payload.pull_request.number;
 
-            const pullRequest = context.payload.pull_request;
-            const prNumber = pullRequest.number;
+            const failureState = 'failure';
 
-            await github.pulls.createReview({
+            await octokit.repos.createStatus({
             owner: repo.owner,
             repo: repo.repo,
-            pull_number: prNumber,
-            body: description,
-            event: 'REQUEST_CHANGES'
-            });
-            await github.repos.createStatus({
-            owner: repo.owner,
-            repo: repo.repo,
-            sha: pullRequest.head.sha,
-            state: state,
-            description: description,
-            context: 'Continuous Integration'
+            sha: context.payload.pull_request.head.sha,
+            state: failureState,
+            description: 'Workflow checks have failed',
+            context: 'continuous-integration'
             });
